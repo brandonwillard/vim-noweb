@@ -23,8 +23,9 @@ You can enable the Python 3 interface with `pip`, e.g.:
 ```bash
 $ pip3 install neovim
 ```
+
 # Development
 
-The development and layout of this plugin is modeled after 
-[deoplete.nvim](https://github.com/Shougo/deoplete.nvim).
+The layout/design of this plugin is modeled after [deoplete.nvim](https://github.com/Shougo/deoplete.nvim).
+
 

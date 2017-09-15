@@ -9,11 +9,7 @@ export THEMIS_HOME := ./vim-themis
 
 
 install: vim-themis
-	pip install neovim --upgrade
-	pip install pytest --upgrade
-	pip install flake8 --upgrade
-	pip install mypy-lang --upgrade
-	pip install vim-vint --upgrade
+	pip install -r rplugin/python/vim_noweb/requirements.txt
 
 lint:
 	vint --version
