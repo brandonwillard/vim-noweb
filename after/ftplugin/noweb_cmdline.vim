@@ -67,7 +67,10 @@ function! NowebSendFHChunk()
   let curbuf = getline(1, "$")
   let idx = 0
   while idx < here
-		let enabled = pyeval("chunk_enabled('".escape(curbuf[idx], "\\\"'")."', vim.current.buffer.vars.get('noweb_chunk_pos_enabled_opts', {}), vim.current.buffer.vars.get('noweb_chunk_neg_enabled_opts', {}))")
+    " TODO: use ChunkEnabled
+    " escape(curbuf[idx], "\\\"'")
+    let enabled = ChunkEnabled(curbuf[idx])
+
     "if curbuf[idx] =~ begchk
     if enabled == 1
       let idx += 1

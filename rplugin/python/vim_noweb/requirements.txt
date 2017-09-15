@@ -1,0 +1,6 @@
+neovim
+pweave
+pytest
+flake8
+mypy-lang
+vim-vint

@@ -1,8 +1,5 @@
 filetype off
-set rtp+=./
-set rtp+=./after
-set rtp+=./rplugin
-set rtp+=./plugin
+let &rtp .= ','.finddir('vim-noweb', ';', 1)
 filetype plugin indent on
 syntax enable
 let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
