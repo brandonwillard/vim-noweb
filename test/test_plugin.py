@@ -20,11 +20,11 @@ def test_chunk_enabled():
     # No buffer-local variables are set.
     # cur_buf_vars = nvim.current.buffer.vars
     try:
-        nvim.input(":unlet b:noweb_chunk_pos_enabled_opts")
+        nvim.input(":unlet b:vim_noweb#chunk_pos_enabled_opts")
     except nvim.error:
         pass
     try:
-        nvim.input(":unlet b:noweb_chunk_neg_enabled_opts")
+        nvim.input(":unlet b:vim_noweb#chunk_neg_enabled_opts")
     except nvim.error:
         pass
 
@@ -38,8 +38,8 @@ def test_chunk_enabled():
 
     # Buffer-local variables are set empty.
     cur_buf_vars = nvim.current.buffer.vars
-    cur_buf_vars['noweb_chunk_pos_enabled_opts'] = {}
-    cur_buf_vars['noweb_chunk_neg_enabled_opts'] = {}
+    cur_buf_vars['vim_noweb#chunk_pos_enabled_opts'] = {}
+    cur_buf_vars['vim_noweb#chunk_neg_enabled_opts'] = {}
 
     assert not plugin_obj.chunk_enabled("<<blah>>=")
     assert not plugin_obj.chunk_enabled("<<blah, evaluate=False>>=")
@@ -50,8 +50,8 @@ def test_chunk_enabled():
     assert not plugin_obj.chunk_enabled("<<blah, fig=False>>=")
 
     # Buffer-local variables are set with default enabled.
-    cur_buf_vars['noweb_chunk_pos_enabled_opts'] = {'evaluate': True}
-    cur_buf_vars['noweb_chunk_neg_enabled_opts'] = {'fig': False}
+    cur_buf_vars['vim_noweb#chunk_pos_enabled_opts'] = {'evaluate': True}
+    cur_buf_vars['vim_noweb#chunk_neg_enabled_opts'] = {'fig': False}
 
     assert plugin_obj.chunk_enabled("<<blah>>=")
     assert plugin_obj.chunk_enabled("<<blah, evaluate=True>>=")
@@ -62,8 +62,8 @@ def test_chunk_enabled():
     assert not plugin_obj.chunk_enabled("<<blah, fig=True>>=")
 
     # Buffer-local variables are set with default disabled.
-    cur_buf_vars['noweb_chunk_pos_enabled_opts'] = {'evaluate': False}
-    cur_buf_vars['noweb_chunk_neg_enabled_opts'] = {'fig': False}
+    cur_buf_vars['vim_noweb#chunk_pos_enabled_opts'] = {'evaluate': False}
+    cur_buf_vars['vim_noweb#chunk_neg_enabled_opts'] = {'fig': False}
 
     assert not plugin_obj.chunk_enabled("<<blah>>=")
     assert plugin_obj.chunk_enabled("<<blah, evaluate=True>>=")

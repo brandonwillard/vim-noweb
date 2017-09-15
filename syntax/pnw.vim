@@ -8,7 +8,7 @@
 " recognized as a Vim `keyword`, but haven't confirmed it.
 "
 
-if version < 600
+if v:version < 600
   syntax clear
 elseif exists("b:current_syntax")
   finish

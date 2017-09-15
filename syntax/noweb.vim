@@ -33,42 +33,42 @@
 "
 
 " Remove any old syntax stuff hanging around
-if version < 600
+if v:version < 600
   syntax clear
-elseif exists("b:current_syntax")
+elseif exists('b:current_syntax')
   finish
   w
 endif
 
 syn case match
 
-if !exists("b:noweb_backend")
-  let b:noweb_backend = "nosyntax"
+if !exists('b:noweb_backend')
+  let b:noweb_backend = 'nosyntax'
 endif
 
-if !exists("b:noweb_language")
-  let b:noweb_language = "nosyntax"
+if !exists('b:noweb_language')
+  let b:noweb_language = 'nosyntax'
 endif
 
 " This was probably set by the previous source/runtime call.
-if exists("b:current_syntax")
+if exists('b:current_syntax')
   unlet b:current_syntax
 endif
 
-if version < 600
-  execute "source <sfile>:p:h/" . b:noweb_backend . ".vim"
+if v:version < 600
+  execute 'source <sfile>:p:h/' . b:noweb_backend . '.vim'
 else
-  execute "runtime! syntax/" . b:noweb_backend . ".vim"
+  execute 'runtime! syntax/' . b:noweb_backend . '.vim'
 endif
 
 unlet! b:current_syntax
 
 " Load the chunk code syntax settings into a variable:
-execute "syntax include @nowebCode syntax/" . b:noweb_language . ".vim"
+execute 'syntax include @nowebCode syntax/' . b:noweb_language . '.vim'
 
 unlet! b:current_syntax
 
-if exists("noweb_fold_code") && noweb_fold_code == 1
+if get(g:, 'noweb_fold_code', 1) == 1
   setl foldmethod=syntax
 
   syn region nowebChunk matchgroup=nowebDelimiter
@@ -112,6 +112,6 @@ hi def link nowebSweaveOpts Statement
 hi def link nowebChunkReference Delimiter
 
 " Could use b:noweb_backend . b:noweb_language
-let b:current_syntax = "noweb"
+let b:current_syntax = 'noweb'
 
 " vim:foldmethod=marker:foldlevel=0
