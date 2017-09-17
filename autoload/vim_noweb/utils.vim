@@ -63,14 +63,19 @@ function! vim_noweb#utils#lines_from_here()
   let l:here = line('.')
   let l:curbuf = getline(1, '$')
   let l:idx = 0
+
   while l:idx < l:here
     " escape(curbuf[idx], '\\\"'')
-    let l:enabled = ChunkEnabled(l:curbuf[l:idx])
+    let l:chunk_line = l:curbuf[l:idx]
+    
+    "if curbuf[idx] =~# begchk
+    " if !empty(l:chunk_line)
+    let l:enabled = ChunkEnabled(l:chunk_line)
+    " endif
 
-    "if curbuf[idx] =~ begchk
     if l:enabled == 1
       let l:idx += 1
-      while l:curbuf[l:idx] !~ l:endchk && l:idx < l:here
+      while l:curbuf[l:idx] !~# l:endchk && l:idx < l:here
         let l:codelines += [l:curbuf[l:idx]]
         let l:idx += 1
       endwhile
@@ -97,7 +102,7 @@ function! vim_noweb#utils#lines_from_chunk(...)
     let l:chunkline = search("^<<\\s*" . a:2, 'bncw') + 1
     if l:chunkline < 2
       echomsg 'Chunk starting with "' . a:2 . '" not found.'
-      return
+      return []
     endif
     "let l:docline = search('\\%>'.string(l:chunkline-1).'l\\_.\\{-}\\_^@', 'ncwe') - 1
     let l:endchk = '^@'
@@ -109,7 +114,7 @@ function! vim_noweb#utils#lines_from_chunk(...)
   else
     if vim_noweb#utils#is_in_code(0) == 0
       echomsg 'Not inside a code chunk.'
-      return
+      return []
     endif
     let l:chunkline = search('^<<', 'bncW') + 1
     let l:docline = search('^@', 'ncW') - 1

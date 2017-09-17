@@ -80,10 +80,8 @@ def chunk_enabled(line, pos_options, neg_options, is_enabled=default_is_enabled)
         return False
 
     res = any(is_enabled(chunk_opts.get(opt_name, ''), opt_default)
-            for opt_name, opt_default in pos_options.items())
+              for opt_name, opt_default in pos_options.items())
 
     res &= not any(is_enabled(chunk_opts.get(opt_name, ''), opt_default)
-                for opt_name, opt_default in neg_options.items())
+                   for opt_name, opt_default in neg_options.items())
     return res
-
-

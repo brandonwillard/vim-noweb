@@ -19,21 +19,26 @@ endif
 function! NowebSendChunk(...)
   let l:codelines = vim_noweb#utils#lines_from_chunk(a:000)
 
-  call b:cmdline_source_fun_backend(l:codelines)
+  if !empty(l:codelines)
+    call b:cmdline_source_fun_backend(l:codelines)
 
-  if a:1 ==? 'down'
-    call vim_noweb#utils#goto_next_chunk()
+    if a:1 ==? 'down'
+      call vim_noweb#utils#goto_next_chunk()
+    endif
   endif
 endfunction
 
 function! NowebSendFHChunk()
+
   let l:codelines = vim_noweb#utils#lines_from_here()
-  call b:cmdline_source_fun_backend(l:codelines)
+  
+  if !empty(l:codelines)
+    call b:cmdline_source_fun_backend(l:codelines)
+  endif
 endfunction
 
 function! ReplSendString_noweb(lines)
-  if vim_noweb#utils#is_in_code(0) == 0
-    echomsg 'Not inside a code chunk.'
+  if vim_noweb#utils#is_in_code(1) == 0
     return
   else
     return b:cmdline_source_fun_backend(a:lines)
