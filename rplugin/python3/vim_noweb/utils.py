@@ -1,10 +1,25 @@
+import sys
 import re
-import collections
 import distutils.util
 
-from itertools import cycle
+from io import StringIO
 
-# TODO: Use `pweave`.
+import contextlib
+
+
+@contextlib.contextmanager
+def capture():
+    """ https://stackoverflow.com/a/10743550/3006474
+    """
+    oldout, olderr = sys.stdout, sys.stderr
+    try:
+        out = [StringIO(), StringIO()]
+        sys.stdout, sys.stderr = out
+        yield out
+    finally:
+        sys.stdout, sys.stderr = oldout, olderr
+        out[0] = out[0].getvalue()
+        out[1] = out[1].getvalue()
 
 
 def parse_noweb_args(line):

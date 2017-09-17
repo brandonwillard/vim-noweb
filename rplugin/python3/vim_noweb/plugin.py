@@ -1,10 +1,11 @@
 import os
+import traceback
 
 import neovim
 
 import pweave
 
-from .utils import chunk_enabled
+from .utils import chunk_enabled, capture
 
 
 @neovim.plugin
@@ -79,33 +80,62 @@ class VimNowebPlugin:
 
         return chunk_enabled(line, pos_enabled_opts, neg_enabled_opts)
 
-    # TODO:
-    @neovim.function("NowebWeave", sync=True)
-    def nvim_weave_file(self):
+    @neovim.command("NowebWeave", nargs=0, sync=True)
+    def nvim_weave_file(self, *args, **kwargs):
+        """ Weaves the current buffer with Pweave.
+
+        The weaving process relies on a few vim variables:
+
+            * `noweb_weave_language`: name of the Jupyter language kernel for
+            the code in the document's code chunks (e.g. 'python3').
+            * `noweb_weave_backend`: name of the typesetting language in which
+            the code is embedded.  In other words, the file format of the
+            weaving's output.
+            * `noweb_format_opts`: Pweave formatter dictionary.
+            See http://mpastell.com/pweave/customizing.html.
+            * `noweb_weave_docmode`: Set Pweave's docmode option.
+            * `noweb_backend_src_dir`: Location/destination for the
+            resulting backend source file.
+            * `noweb_figures_dir`: Destination for resulting figures.
+            * `noweb_weave_formatter`: Name of the Pweave output
+            format.  See http://mpastell.com/pweave/formats.html.
+
+        If you would like to add new Pweave formats or change default
+        Pweave values, make these changes via the standard Pweave route
+        (e.g. http://mpastell.com/pweave/defaults.html)
+        using Vim's Python capabilities (e.g. `:python ...`)
+        *after* this plugin has loaded.
+
+        """
 
         currbuf = self.nvim.current.buffer
 
-        weave_format_opts = self._get_any_var('noweb_language',
+        weave_format_opts = self._get_any_var('noweb_format_opts',
                                               {'width': r'\linewidth'})
 
-        weave_shell = self._get_any_var('noweb_language', 'ipython_ext')
-        file_out_ext = self._get_any_var('noweb_backend', None)
+        weave_kernel = self._get_any_var('noweb_weave_language', None)
+        if weave_kernel is None:
+            weave_kernel = self._get_any_var('noweb_language', None)
+
+        file_out_ext = self._get_any_var('noweb_weave_backend', None)
+        if file_out_ext is None:
+            file_out_ext = self._get_any_var('noweb_backend', None)
+
         weave_docmode = self._get_any_var('noweb_weave_docmode', True)
 
-        latex_src_dir = self._get_any_var('latex_src_dir', './')
-        latex_figures_dir = self._get_any_var('latex_figures_dir', './')
+        backend_src_dir = self._get_any_var('noweb_backend_src_dir', './')
+        figures_dir = self._get_any_var('noweb_figures_dir', './')
 
         # TODO: Could also use `g:vimtex_latexmk_build_dir`.
-        # latex_build_dir = self._get_any_var('latex_build_dir', './')
-        # latex_pdf_file = self._get_any_var('latex_pdf_file', './')
+        # build_dir = self._get_any_var('latex_build_dir', './')
 
         project_dir, input_file = os.path.split(currbuf.name)
         input_file_base, input_file_ext = os.path.splitext(input_file)
         output_filename = input_file_base + os.path.extsep + file_out_ext
 
-        output_file = os.path.join(latex_src_dir, output_filename)
+        output_file = os.path.join(backend_src_dir, output_filename)
 
-        pweave.rcParams['figdir'] = latex_figures_dir
+        pweave.rcParams['figdir'] = figures_dir
         pweave.rcParams['storeresults'] = weave_docmode
 
         # E.g. 'texmintedpandoc'
@@ -118,17 +148,32 @@ class VimNowebPlugin:
             weave_formatter = formats_mod.guessFromExtension(file_out_ext)
             formatter_cls = formats_mod.formats.get(weave_formatter)
 
-        pweb_formatter = formatter_cls['class'](file=input_file,
-                                                format=file_out_ext,
-                                                shell=weave_shell,
-                                                figdir=latex_figures_dir,
-                                                output=output_file,
-                                                docmode=weave_docmode)
+        weaver = pweave.Pweb(input_file,
+                             doctype=file_out_ext,
+                             kernel=weave_kernel,
+                             output=output_file,
+                             figdir=figures_dir)
+
+        weaver.documentationmode = weave_docmode
+
+        weaver.setformat(Formatter=formatter_cls['class'])
 
         if weave_format_opts is not None:
-            pweb_formatter.updateformat(weave_format_opts)
+            weaver.updateformat(weave_format_opts)
 
-        pweb_formatter.weave()
+        try:
+            # XXX: If we let Pweave output as it likes, apparently Neovim's RPC
+            # gets too upset.
+            with capture() as out:
+                weaver.weave()
+        except Exception as e:
+            for line in traceback.format_exc().splitlines():
+                self.nvim.err_write("{}\n".format(line))
+
+        # FYI: Gotta add those newlines; otherwise, Neovim won't flush the
+        # message.
+        self.nvim.out_write("{}\n".format(out[0]))
+        self.nvim.err_write("{}\n".format(out[1]))
 
         # TODO: Populate quickfix with weave output?
 
@@ -249,4 +294,3 @@ class VimNowebPlugin:
     #   endif
     #   return l:codelines
     # endfunction
-

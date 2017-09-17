@@ -1,7 +1,6 @@
-neovim
-pweave
-pytest
-flake8
-mypy-lang
-vim-vint
-pweave
+neovim==0.1.13
+Pweave==0.30.1
+pytest==3.2.2
+flake8==3.4.1
+mypy-lang==0.5.0
+vim-vint==0.3.14
