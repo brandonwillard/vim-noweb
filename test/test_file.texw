@@ -1,0 +1,42 @@
+
+
+\begin{document}
+
+<<echo=False, evaluate=True>>=
+print("1")
+@
+
+% XXX: Make sure NowebSendFHChunk doesn't run the following chunk.
+<<chunk2, echo=False, evaluate=False>>=
+print("2")
+@
+
+% XXX: Make sure NowebSendFHChunk doesn't run the following chunk.
+<<echo=False, evaluate=False>>=
+print("3")
+@
+
+% XXX: Make sure NowebSendFHChunk doesn't run the following chunk.
+<<chunk4, echo=False, evaluate=False, fig=True, figsize=(1, 2)>>=
+print("4")
+@
+
+% XXX: Make sure NowebSendFHChunk doesn't run the following chunk.
+<<chunk5, fig=True, evaluate=True>>=
+print("5")
+@
+
+<<chunk6>>=
+print("6")
+@
+
+% XXX: Make sure NowebSendFHChunk doesn't run the following chunk.
+<<chunk7, fig=True>>=
+print("7")
+@
+
+<<chunk8, fig=False>>=
+print("8")
+@
+
+\end{document}
