@@ -5,3 +5,4 @@ flake8==3.4.1
 mypy-lang==0.5.0
 vim-vint==0.3.14
 pynoweb_tools
+vimdoc -e git://github.com/brandonwillard/vimdoc.git#egg=vimdoc 
