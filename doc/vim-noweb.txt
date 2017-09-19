@@ -1,0 +1,43 @@
+*vim-noweb.txt*	Tools for working with Noweb files.
+brandonwillard                                                     *vim-noweb*
+
+==============================================================================
+CONTENTS                                                  *vim-noweb-contents*
+  1. Configuration..........................................|vim-noweb-config|
+  2. Commands.............................................|vim-noweb-commands|
+
+==============================================================================
+CONFIGURATION                                               *vim-noweb-config*
+
+                                          *g:vim_noweb#chunk_pos_enabled_opts*
+A code chunk is considered enable by the REPL features when
+  1. one of the "positive" options in this variable is set to true in the
+    current chunk,
+  2. one of the positive options is unset and its default is true,
+  3. none are explicitly set to false in the current chunk.
+
+
+                                          *g:vim_noweb#chunk_neg_enabled_opts*
+A code chuk is considered disabled by the REPL features when
+  1. one of the "negative" options in this variable is set to true in the
+    current chunk,
+  2. one of the negative options is unset in the current chunk and has a
+    default of true.
+
+
+                                                *g:vim_noweb#disable_onchange*
+If true, disables syntax scope option changes.
+
+==============================================================================
+COMMANDS                                                  *vim-noweb-commands*
+
+:NowebSendChunkCmd                                        *:NowebSendChunkCmd*
+  Send the code in the chunk under the cursor.
+
+
+:NowebSendFHChunkCmd                                    *:NowebSendFHChunkCmd*
+  Send all code in chunks preceding the cursor.
+
+
+
+vim:tw=78:ts=8:ft=help:norl:
