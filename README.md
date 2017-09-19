@@ -28,4 +28,9 @@ $ pip3 install neovim
 
 The layout/design of this plugin is modeled after [deoplete.nvim](https://github.com/Shougo/deoplete.nvim).
 
+## Documentation
+
+Vimdocs are generated with the Python module [`vimdoc`](https://github.com/google/vimdoc).  Just run `vimdoc`.
+
+
 

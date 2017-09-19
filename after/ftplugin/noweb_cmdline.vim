@@ -45,7 +45,14 @@ function! ReplSendString_noweb(lines)
   endif
 endfunction
 
+""
+" Send the code in the chunk under the cursor.
+"
 command! NowebSendChunkCmd call NowebSendChunk('stay')
+
+""
+" Send all code in chunks preceding the cursor.
+"
 command! NowebSendFHChunkCmd call NowebSendFHChunk()
 
 nnoremap <buffer><silent> <Plug>(noweb-send-chunk) :<C-U>call NowebSendChunk('stay')<CR>
@@ -54,11 +61,14 @@ nnoremap <buffer><silent> <Plug>(noweb-send-fh-chunk) :<C-U>call NowebSendFHChun
 nmap <buffer> <LocalLeader>tc <Plug>(noweb-send-chunk)
 nmap <buffer> <LocalLeader>tC <Plug>(noweb-send-fh-chunk)
 
+""
 " Here's a little custom addition that runs a chunk with the
 " name 'pweave_code'.  This can be used to run a weave/build
 " command from Python within the REPL session (so that, for example, weaved chunk
 " variables are exposed to the session).
-nmap <buffer> <LocalLeader>tw :<C-U>call NowebSendChunk('stay', 'pweave_code')<CR>
+" nmap <buffer> <LocalLeader>tz :<C-U>call NowebSendChunk('stay', 'special_code')<CR>
+
+nmap <buffer> <LocalLeader>tw :<C-U>NowebWeave<CR>
 
 let b:cmdline_source_fun = function('ReplSendString_noweb')
 " let b:cmdline_source_fun = {arg -> function('ReplSendMultiline')(arg)}
