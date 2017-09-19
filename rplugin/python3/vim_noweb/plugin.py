@@ -4,8 +4,9 @@ import traceback
 import neovim
 
 import pweave
+import pynoweb_tools.pweave_objs  # noqa
 
-from .utils import chunk_enabled, capture
+from .utils import chunk_enabled, capture, get_virtualenv_path
 
 
 @neovim.plugin
@@ -21,6 +22,10 @@ class VimNowebPlugin:
         """
         self.nvim = nvim.with_decode()
 
+        # virtual_env_path = get_virtualenv_path()
+        # if virtual_env_path is not None:
+        #     self.nvim.out_write("Found virtualenv: {}\n".format(virtual_env_path))
+
     def _get_any_var(self, name, default=None):
         """ Get a variable from buffer scope, if it's not there,
         get it from global; otherwise, return a given default value.
@@ -29,20 +34,6 @@ class VimNowebPlugin:
         b_vars = self.nvim.current.buffer.vars
 
         return b_vars.get(name, g_vars.get(name, default))
-
-    # @neovim.command('NowebTestCommand', nargs='*', sync=True)
-    # def test_command(self, args):
-    #     """ TODO
-    #     Parameters
-    #     ----------
-    #     args: list of str
-    #         Arguments passed from `neovim`.
-    #     """
-    #     logging.info('test command called!')
-    #     # self.nvim.current.buffer.options['syntax'] = 'python'
-    #     # self.nvim.command('syntax enable')
-    #     # buffer = self.nvim.current.buffer
-    #     # window = self.nvim.current.window
 
     @neovim.function("ChunkEnabled", sync=True)
     def nvim_chunk_enabled(self, line):
@@ -139,12 +130,16 @@ class VimNowebPlugin:
         pweave.rcParams['storeresults'] = weave_docmode
 
         # E.g. 'texmintedpandoc'
+        # TODO: Enable some means of importing formatters.
         weave_formatter = self._get_any_var('noweb_weave_formatter')
 
         formats_mod = pweave.formatters.PwebFormats
         formatter_cls = formats_mod.formats.get(weave_formatter, None)
 
         if formatter_cls is None:
+            self.nvim.out_write(
+                ("Couldn't find weave formatter {}; "
+                 "guessing from extension\n").format(weave_formatter))
             weave_formatter = formats_mod.guessFromExtension(file_out_ext)
             formatter_cls = formats_mod.formats.get(weave_formatter)
 
@@ -165,7 +160,10 @@ class VimNowebPlugin:
             # XXX: If we let Pweave output as it likes, apparently Neovim's RPC
             # gets too upset.
             with capture() as out:
-                weaver.weave()
+                # weaver.weave()
+                weaver.run(Processor=CustomIPythonProcessor)
+                weaver.format()
+                weaver.write()
         except Exception as e:
             for line in traceback.format_exc().splitlines():
                 self.nvim.err_write("{}\n".format(line))
