@@ -4,9 +4,9 @@ import traceback
 import neovim
 
 import pweave
-import pynoweb_tools.pweave_objs  # noqa
+import pynoweb_tools.pweave_objs
 
-from .utils import chunk_enabled, capture, get_virtualenv_path
+from .utils import chunk_enabled, capture, CustomIPythonProcessor
 
 
 @neovim.plugin
